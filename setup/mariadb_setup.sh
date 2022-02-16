@@ -61,6 +61,10 @@ echo -e "${CHECKMARK} \e[1;92m Installing Adminer... \e[0m"
 sudo apt install adminer -y &>/dev/null
 sudo a2enconf adminer &>/dev/null
 sudo systemctl reload apache2 &>/dev/null
+mkdir -p /var/log/apache2
+chmod 750 /var/log/apache2
+chown root:adm /var/log/apache2
+service apache2 start
 
 echo -e "${CHECKMARK} \e[1;92m Customizing Container... \e[0m"
 rm /etc/motd

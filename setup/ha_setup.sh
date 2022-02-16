@@ -110,11 +110,19 @@ show_menu(){
     number=`echo "\033[33m"`
     bgred=`echo "\033[41m"`
     fgred=`echo "\033[31m"`
+    hostname -I
     printf "\n${menu}*********************************************${normal}\n"
     printf "${menu}**${number} 1)${safe} Switch to Stable Branch ${normal}\n"
     printf "${menu}**${number} 2)${number} Switch to Beta Branch ${normal}\n"
     printf "${menu}**${number} 3)${fgred} Switch to Dev Branch ${normal}\n"
-    printf "${menu}**${number} 4)${safe} Just Update Containers ${normal}\n"
+    printf "${menu}**${number} 4)${safe} Backup Home Assistant Data (to root) ${normal}\n"
+    printf "${menu}**${number} 5)${number} Restore Home Assistant Data ${normal}\n"
+    printf "${menu}**${number} 6)${fgred} Edit Home Assistant Configuration ${normal}\n"
+    printf "${menu}**${number} 7)${safe} Restart Home Assistant ${normal}\n"
+    printf "${menu}**${number} 8)${safe} Just Update Containers ${normal}\n"
+    printf "${menu}**${number} 9)${number} Remove Unused Images ${normal}\n"
+    printf "${menu}**${number} 10)${safe} Update Host OS ${normal}\n"
+    printf "${menu}**${number} 11)${safe} Reboot Host OS ${normal}\n"
     printf "${menu}*********************************************${normal}\n"
     printf "Please choose an option from the menu and enter or ${fgred}x to exit. ${normal}"
     read opt
@@ -145,16 +153,78 @@ while [ $opt != '' ]
             TAG=beta
             break;
         ;;
-        3) clear;
+        3) while true; do
+            read -p "Are you sure you want to Switch to Dev Branch? Proceed(y/n)?" yn
+            case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) exit;;
+                * ) echo "Please answer yes or no.";;
+            esac
+           done
+           clear;
             option_picked "Switching to Dev Branch";
             TAG=dev
             break;
         ;;
         4) clear;
+            option_picked "Backing up Home Assistant Data to root (hass_config)";
+            rm -r hass_config;
+            cp -pR /var/lib/docker/volumes/hass_config/ /root/;
+            exit;
+        ;;
+        5) while true; do
+            read -p "Are you sure you want to Restore Home Assistant Data? Proceed(y/n)?" yn
+            case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) exit;;
+                * ) echo "Please answer yes or no.";;
+            esac
+           done
+           clear;
+            option_picked "Restoring Home Assistant Data from root (hass_config)";
+            rm -r /var/lib/docker/volumes/hass_config/_data;
+            cp -pR /root/hass_config/_data /var/lib/docker/volumes/hass_config/;
+            exit;
+        ;;
+        6) while true; do
+            read -p "Are you sure you want to Edit Home Assistant Configuration? Proceed(y/n)?" yn
+            case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) exit;;
+                * ) echo "Please answer yes or no.";;
+            esac
+           done
+           clear;
+            option_picked "Editing Home Assistant Configuration";
+            nano /var/lib/docker/volumes/hass_config/_data/configuration.yaml;
+            exit;
+        ;;
+        7) clear;
+            option_picked "Restarting Home Assistant";
+            docker restart homeassistant;
+            exit;
+        ;;
+        8) clear;
             option_picked "Just Updating Containers";
             ./update-containers.sh;
             exit;
         ;;
+        9) clear;
+            option_picked "Removing Unused Images";
+            docker image prune -af;
+            exit;
+        ;;
+        10) clear;
+            option_picked "Updating Host OS";
+            apt update && apt upgrade -y;
+            exit;
+        ;;
+        11) clear;
+            option_picked "Reboot Host OS";
+            reboot;
+            exit;
+        ;;
+
         x)exit;
         ;;
         \n)exit;
@@ -179,7 +249,6 @@ docker run -d \
   -v /etc/timezone:/etc/timezone:ro \
   --net=host \
   homeassistant/home-assistant:$TAG
-  docker image prune -af
 EOF
 sudo chmod +x /root/update
 cat >$UPDATE_CONTAINERS_PATH <<'EOF'
@@ -198,7 +267,6 @@ for container in ${CONTAINER_LIST}; do
     eval ${DOCKER_COMMAND}
   fi 
 done
-docker image prune -af 
 EOF
 sudo chmod +x /root/update-containers.sh
 
@@ -215,6 +283,6 @@ ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,3840
 EOF
 systemctl daemon-reload
 systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
-
+mkdir /root/hass_config
 echo -e "${CHECKMARK} \e[1;92m Cleanup... \e[0m"
 rm -rf /ha_setup.sh /var/{cache,log}/* /var/lib/apt/lists/*
