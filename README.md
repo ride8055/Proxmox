@@ -8,7 +8,7 @@
 <details>
 <summary markdown="span">Proxmox VE 7 Post Install</summary>
  
-<p align="center"><img src="https://www.proxmox.com/images/proxmox/Proxmox_logo_standard_hex_400px.png" alt="Proxmox Server Solutions" height="55"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/proxmoxve/icon.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> Proxmox VE 7 Post Install </h1>
 
@@ -27,6 +27,23 @@ ________________________________________________________________________________
 
 </details>
 
+<details>
+<summary markdown="span"> 🔸Proxmox LXC Updater</summary>
+ 
+<p align="center"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Felpuig.xeill.net%2FMembers%2Fvcarceler%2Farticulos%2Fcontenedores-con-lxd-lxc%2Fcontainers.png&f=1&nofb=1" height="100"/></p>
+
+<h1 align="center" id="heading">Proxmox LXC Updater </h1>
+
+Updates All LXC's Fast & Easy
+ 
+Run the following in the Proxmox Shell.
+
+```yaml
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/update-lxcs.sh)"
+```
+____________________________________________________________________________________________ 
+
+</details>
 
 <details>
 <summary markdown="span">Proxmox Dark Theme</summary>
@@ -64,7 +81,7 @@ bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/vm/h
 ```
 <h3 align="center" id="heading">⚡ Default Settings:  4GB RAM - 32GB Storage - 2vCPU ⚡</h3>
  
-After the script completes, If you're dissatisfied with the default settings, click on the VM, then on the **_Hardware_** tab and change the settings to what you desire. Once all changes have been made, **_Start_** the VM.
+After the script completes, click on the VM, then on the **_Summary_** tab to find the VM IP.
 
 **Home Assistant Interface - IP:8123**
 
@@ -75,13 +92,12 @@ ________________________________________________________________________________
 
 
 <details>
-<summary markdown="span"> 🔸Home Assistant Container LXC (Podman) </summary>
+<summary markdown="span"> Home Assistant Container LXC (Podman) </summary>
  
 <p align="center"><img src="https://heise.cloudimg.io/width/223/q50.png-lossy-50.webp-lossy-50.foil1/_www-heise-de_/imgs/18/2/5/8/2/8/1/0/podman_logo-670078d7ea1d15a6.png" width="100" height="100"/>
 <img src="https://avatars.githubusercontent.com/u/13844975?s=200&amp;v=4" alt="@home-assistant" width="100" height="100"/><img/><img src="https://raw.githubusercontent.com/SelfhostedPro/Yacht/master/readme_media/Yacht_logo_1_dark.png" height="80"/><img/></p>
  
 <h1 align="center" id="heading"> Podman Home Assistant Container LXC </h1>
-<h3 align="center" id="heading"> With ZFS Filesystem Support </h3>
 To create a new Proxmox Podman Home Assistant Container, run the following in the Proxmox Shell. 
 
  ([What is Podman?](https://youtu.be/lkg5QJsoCCQ))
@@ -155,7 +171,7 @@ ________________________________________________________________________________
 
 
 <details>
-<summary markdown="span"> 🔸Home Assistant Container LXC </summary>
+<summary markdown="span"> Home Assistant Container LXC </summary>
  
 <p align="center"><img src="https://www.docker.com/sites/default/files/d8/2019-07/vertical-logo-monochromatic.png" alt="Docker Logos | Docker" width="100" height="100"/>
 <img src="https://avatars.githubusercontent.com/u/13844975?s=200&amp;v=4" alt="@home-assistant" width="100" height="100"/><img src="https://avatars1.githubusercontent.com/u/22225832?s=400&amp;v=4" alt="GitHub - portainer/portainer-docs: Portainer documentation" width="100" height="100"/></p>
@@ -163,9 +179,9 @@ ________________________________________________________________________________
 <h1 align="center" id="heading"> Home Assistant Container LXC </h1>
 <h3 align="center" id="heading"> With ZFS Filesystem Support </h3> 
 To create a new Proxmox Home Assistant Container, run the following in the Proxmox Shell.
-
+ 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/ha_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/homeassistant.sh)"
 ```
  
 <h3 align="center" id="heading">⚡ Default Settings:  2GB RAM - 8GB Storage - 2vCPU ⚡</h3>
@@ -220,6 +236,12 @@ Run in the LXC console
 ```yaml
 ./update
 ```
+⚙️ **Migrate to the latest Update Menu**
+
+Run in the LXC console
+```yaml
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/latest-update-menu.sh)"
+```
  
 ____________________________________________________________________________________________ 
 </details>
@@ -230,7 +252,7 @@ ________________________________________________________________________________
 <details>
 <summary markdown="span">ESPHome LXC</summary>
  
-<p align="center"><img src="https://esphome.io/_static/logo-text.svg" alt="Logo" height="90"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/esphome/dark_icon@2x.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> ESPHome LXC Container </h1>
 
@@ -258,7 +280,7 @@ ________________________________________________________________________________
 
 
 <details>
-<summary markdown="span">Nginx Proxy Manager LXC</summary>
+<summary markdown="span"> Nginx Proxy Manager LXC </summary>
  
 <p align="center"><img src="https://nginxproxymanager.com/logo.png" alt="hero" height="100"/></p>
 
@@ -268,7 +290,7 @@ ________________________________________________________________________________
 To create a new Proxmox Nginx Proxy Manager LXC Container, run the following in the Proxmox Shell.
 
 ```yaml
- bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/npm_container.sh)"
+ bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/nginx-proxy-manager.sh)"
 ```
 <h3 align="center" id="heading">⚡ Default Settings:  1GB RAM - 3GB Storage - 1vCPU ⚡</h3>
 
@@ -296,12 +318,19 @@ Add the following to your `configuration.yaml` in Home Assistant.
  ```yaml
  changeme
  ```
+⚙️ **To Update Nginx Proxy Manager**
+
+Run in the LXC console
+```yaml
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/npm_update.sh)"
+```
+
  ____________________________________________________________________________________________ 
 
 </details>
 
 <details>
-<summary markdown="span">MQTT LXC</summary>
+<summary markdown="span"> MQTT LXC</summary>
  
 <p align="center"><img src="https://mosquitto.org/images/mosquitto-text-side-28.png" height="75"/></p>
 
@@ -311,8 +340,9 @@ Add the following to your `configuration.yaml` in Home Assistant.
 To create a new Proxmox MQTT LXC Container, run the following in the Proxmox Shell.
 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/mqtt_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/mqtt.sh)"
 ```
+
 <h3 align="center" id="heading">⚡ Default Settings:  512MiB RAM - 2GB Storage - 1vCPU ⚡</h3>
  
 Mosquitto comes with a password file generating utility called mosquitto_passwd.
@@ -351,9 +381,9 @@ ________________________________________________________________________________
 </details>
 
 <details>
-<summary markdown="span">Node-Red LXC</summary>
+<summary markdown="span"> Node-Red LXC </summary>
  
-<p align="center"><img src="https://nodered.org/about/resources/media/node-red-icon.png" alt="@node-red" width="100" height="100"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/custom_integrations/nodered/icon.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> Node-Red LXC Container </h1>
  
@@ -361,8 +391,9 @@ ________________________________________________________________________________
 To create a new Proxmox Node-RED LXC Container, run the following in the Proxmox Shell.
 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/node-red_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/node-red.sh)"
 ```
+
 <h3 align="center" id="heading">⚡ Default Settings:  1GB RAM - 4GB Storage - 1vCPU ⚡</h3>
  
 **Node-Red Interface - IP:1880**
@@ -380,23 +411,31 @@ Run in the LXC console (Restart after update)
 ```yaml
 npm install -g --unsafe-perm node-red
 ```
- 
+
+⚙️ **To Install Node-Red Themes** ⚠️ **Backup your flows before running this script!!**
+
+Run in the LXC console
+```yaml
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/node-red-themes.sh)"
+```
+
 ____________________________________________________________________________________________ 
  
 </details>
 
 <details>
-<summary markdown="span"> 🔸Mariadb LXC </summary>
+<summary markdown="span"> Mariadb LXC </summary>
  
 <p align="center"><img src="https://mariadb.com/wp-content/webp-express/webp-images/doc-root/wp-content/themes/sage/dist/images/mariadb-logo-white.png.webp" alt="MariaDB"/><img src="https://raw.githubusercontent.com/tteck/Proxmox/main/misc/images/adminer_logo-cl.png" height="60"></p>
 
 <h1 align="center" id="heading"> Mariadb LXC Container </h1>
 
 To create a new Proxmox Mariadb LXC Container, run the following in the Proxmox Shell.
-
+ 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/mariadb_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/mariadb.sh)"
 ```
+
 <h3 align="center" id="heading">⚡ Default Settings:  1GB RAM - 4GB Storage - 1vCPU ⚡</h3>
  
 To enable MariaDB to listen to remote connections, you need to edit your defaults file. To do this, open the console in your MariaDB lxc:
@@ -498,7 +537,7 @@ ________________________________________________________________________________
 <details>
 <summary markdown="span"> Zigbee2MQTT LXC </summary>
  
-<p align="center"><img src="https://github.com/Koenkk/zigbee2mqtt/blob/master/images/logo.png?raw=true" alt="logo.png" width="100" height="100"/></p>
+<p align="center"><img src="https://github.com/Koenkk/zigbee2mqtt/blob/master/images/logo_bee_only.png?raw=true" height="100"/></p>
 
 
 <h1 align="center" id="heading">Zigbee2MQTT LXC Container</h1>
@@ -506,7 +545,7 @@ ________________________________________________________________________________
 To create a new Proxmox Zigbee2MQTT LXC Container, run the following in the Proxmox Shell.
 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/zigbee2mqtt_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/zigbee2mqtt.sh)"
 ```
 <h3 align="center" id="heading">⚡ Default Settings:  1GB RAM - 4GB Storage - 2vCPU ⚡</h3>
 
@@ -578,7 +617,7 @@ ________________________________________________________________________________
 <details>
 <summary markdown="span"> Zwavejs2MQTT LXC </summary>
  
-<p align="center"><img src="https://github.com/zwave-js/zwavejs2mqtt/raw/master/docs/_images/zwavejs_logo.svg" height="100"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/zwave/icon.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> Zwavejs2MQTT LXC Container </h1>
 
@@ -606,8 +645,9 @@ ________________________________________________________________________________
 To create a new Proxmox Debian 11 (curl. sudo, auto login) LXC Container, run the following in the Proxmox Shell.
 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/debian11_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/debian.sh)"
 ```
+
 <h3 align="center" id="heading">⚡ Default Settings:  512MiB RAM - 2GB Storage - 1vCPU ⚡</h3>
 
 After the script completes, If you're dissatisfied with the default settings, click on the LXC, then on the **_Resources_** tab and change the settings to what you desire. Changes are immediate.
@@ -634,8 +674,9 @@ ________________________________________________________________________________
 To create a new Proxmox Ubuntu 21.10 (curl. sudo, auto login) LXC Container, run the following in the Proxmox Shell.
 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/ubuntu_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/ubuntu.sh)"
 ```
+
 <h3 align="center" id="heading">⚡ Default Settings:  512MiB RAM - 2GB Storage - 1vCPU ⚡</h3>
 
 After the script completes, If you're dissatisfied with the default settings, click on the LXC, then on the **_Resources_** tab and change the settings to what you desire. Changes are immediate.
@@ -681,7 +722,7 @@ ________________________________________________________________________________
 <details>
 <summary markdown="span"> Plex Media Server LXC </summary>
 
-<p align="center"><img src="https://www.plex.tv/wp-content/themes/plex/assets/img/plex-logo.svg" height="80"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/plex/icon.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> Plex Media Server LXC </h1>
 <h3 align="center" id="heading"> With Hardware Acceleration Support </h3> 
@@ -715,7 +756,7 @@ ________________________________________________________________________________
 
 <details>
 <summary markdown="span"> Jellyfin Media Server LXC </summary>
-<p align="center"><img src="https://jellyfin.org/images/banner-dark.svg" height="80"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/jellyfin/icon.png?raw=true" height="100"/></p>
 <h1 align="center" id="heading"> Jellyfin Media Server LXC </h1>
 
 To create a new Proxmox Jellyfin Media Server LXC, run the following in the Proxmox Shell.
@@ -742,7 +783,7 @@ ________________________________________________________________________________
 <details>
 <summary markdown="span">Pi-hole LXC</summary>
  
-<p align="center"><img src="https://camo.githubusercontent.com/9426a93d32aa9f5ad757b2befcdb762a270d344efd6b8d287a2cea2c4c2233b8/68747470733a2f2f70692d686f6c652e6769746875622e696f2f67726170686963732f566f727465782f566f727465785f776974685f576f72646d61726b2e737667" alt="Pi-hole" width="100" height="100"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/pi_hole/icon.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> Pi-hole LXC </h1>
 
@@ -773,17 +814,18 @@ ________________________________________________________________________________
  
  
 <details>
-<summary markdown="span">AdGuard Home LXC</summary>
+<summary markdown="span"> AdGuard Home LXC</summary>
  
-<p align="center"><img src="https://dashboard.snapcraft.io/site_media/appmedia/2020/04/256.png" width="100" height="100"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/adguard/icon.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> AdGuard Home LXC </h1>
 
 To create a new Proxmox AdGuard Home LXC, run the following in the Proxmox Shell.
 
 ```yaml
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/adguard_container.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/adguard.sh)"
 ```
+
 <h3 align="center" id="heading">⚡ Default Settings:  512MiB RAM - 2GB Storage - 1vCPU ⚡</h3>
  
 **AdGuard Home Setup Interface - IP:3000  (After Setup use only IP)**
@@ -799,10 +841,58 @@ ________________________________________________________________________________
 
 </details>
 
+
+<details>
+<summary markdown="span"> 🔸Dashy LXC</summary>
+ 
+<p align="center"><img src="https://github.com/Lissy93/dashy/raw/master/public/web-icons/dashy-logo.png" height="100"/></p>
+
+<h1 align="center" id="heading"> Dashy LXC </h1>
+
+Dashy helps you organize your self-hosted services by making them accessible from a single place
+
+To create a new Proxmox Dashy LXC, run the following in the Proxmox Shell.
+
+```yaml
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/dashy.sh)"
+```
+<h3 align="center" id="heading">⚡ Default Settings:  2GB RAM - 3GB Storage - 2vCPU ⚡</h3>
+ 
+**Dashy Interface - IP:4000**
+
+__________________________________________________________________________________________ 
+
+</details>
+
+<details>
+<summary markdown="span"> 🔸Daemon Sync Server LXC</summary>
+ 
+<p align="center"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimg.informer.com%2Ficons_mac%2Fpng%2F128%2F350%2F350335.png&f=1&nofb=1" height="100"/></p>
+
+<h1 align="center" id="heading"> Daemon Sync Server LXC </h1>
+
+Sync files from app to server, share photos & videos, back up your data and stay secure inside local network.
+
+To create a new Proxmox Daemon Sync Server LXC, run the following in the Proxmox Shell.
+
+```yaml
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/daemonsync.sh)"
+```
+
+<h3 align="center" id="heading">⚡ Default Settings:  512MiB RAM - 8GB Storage - 1vCPU ⚡</h3>
+ 
+**Daemon Sync Server Interface - IP:8084**
+ 
+Search: `DAEMON Sync` in your favorite app store
+
+__________________________________________________________________________________________ 
+
+</details>
+ 
 <details>
 <summary markdown="span"> MotionEye NVR LXC </summary>
  
-<p align="center"><img src="https://raw.githubusercontent.com/tteck/Proxmox/main/misc/images/motioneye-256x256.png" width="100" height="100"/></p>
+<p align="center"><img src="https://github.com/home-assistant/brands/blob/master/core_integrations/motioneye/icon.png?raw=true" height="100"/></p>
 
 <h1 align="center" id="heading"> MotionEye NVR LXC </h1>
 
@@ -824,7 +914,7 @@ After the script completes, If you're dissatisfied with the default settings, cl
  `admin`
  
  **password** 
- `Leave Blank`
+ 
  
 ⚙️ **To Update MotionEye**
  
@@ -880,7 +970,7 @@ ________________________________________________________________________________
 </details>
 
 <details>
-<summary markdown="span"> Vaultwarden LXC</summary>
+<summary markdown="span"> 🔸Vaultwarden LXC</summary>
  
 <p align="center"><img src="https://raw.githubusercontent.com/dani-garcia/vaultwarden/main/resources/vaultwarden-icon-white.svg" width="100" height="100"/></p>
 
@@ -891,14 +981,23 @@ To create a new Proxmox Vaultwarden LXC, run the following in the Proxmox Shell.
 ```
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/vault_container.sh)"
 ```
-It builds from source, which takes time and resources. After the installation, resources can be set to Normal Settings. I've left most of the installation process viewable since the Rust install needs user input (requires a "enter" key press), and the lengthy time to complete the full installation.
- <h3 align="center" id="heading">⚡ Normal Settings:  512Mib RAM - 8GB Storage - 1vCPU ⚡</h3>
- 
-Be Patient, let the script do it's work. Hopefully, you'll eventually see "Successfully created a Vaultwarden LXC Container"
+⚠️Vaultwarden needs to be behind a proxy (Nginx Proxy Manager) to obtain HTTPS and to allow clients to connect.
+
+It builds from source, which takes time and resources. After the installation, resources can be set to Normal Settings. 
+
+Expect 30+ minute install time.
+<h3 align="center" id="heading">⚡ Normal Settings:  512Mib RAM - 8GB Storage - 1vCPU ⚡</h3>
 
 [Clients](https://bitwarden.com/download/)
  
 **Vaultwarden Interface - IP:8000**
+
+⚙️ **To Update Vaultwarden**
+
+Run in the LXC console
+```yaml
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/misc/vaultwarden-update.sh)"
+```
 
 ____________________________________________________________________________________________ 
 

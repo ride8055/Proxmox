@@ -6,11 +6,6 @@ set -o nounset
 set -o pipefail 
 shopt -s expand_aliases
 alias die='EXIT=$? LINE=$LINENO error_exit'
-CROSS='\033[1;31m\xE2\x9D\x8C\033[0m'
-CHECKMARK='\033[0;32m\xE2\x9C\x94\033[0m'
-RETRY_NUM=5
-RETRY_EVERY=3
-NUM=$RETRY_NUM
 trap die ERR
 trap 'die "Script interrupted."' INT
 
@@ -27,35 +22,48 @@ function msg() {
   echo -e "$TEXT"
 }
 
-echo -e "${CHECKMARK} \e[1;92m Setting up Container OS... \e[0m"
+CROSS='\033[1;31m\xE2\x9D\x8C\033[0m'
+RD=`echo "\033[01;31m"`
+BL=`echo "\033[36m"`
+CM='\xE2\x9C\x94\033'
+GN=`echo "\033[1;92m"`
+CL=`echo "\033[m"`
+RETRY_NUM=5
+RETRY_EVERY=3
+NUM=$RETRY_NUM
+
+echo -en "${GN} Setting up Container OS... "
 sed -i "/$LANG/ s/\(^# \)//" /etc/locale.gen
 locale-gen >/dev/null
 while [ "$(hostname -I)" = "" ]; do
-  1>&2 echo -e "${CROSS} \e[1;31m No Network: \e[0m $(date)"
+  1>&2 echo -en "${CROSS}${RD}  No Network! "
   sleep $RETRY_EVERY
   ((NUM--))
   if [ $NUM -eq 0 ]
   then
-    1>&2 echo -e "${CROSS} \e[1;31m No Network After $RETRY_NUM Tries \e[0m"
+    1>&2 echo -e "${CROSS}${RD}  No Network After $RETRY_NUM Tries${CL}"    
     exit 1
   fi
 done
-  echo -e "${CHECKMARK} \e[1;92m Network Connected: \e[0m $(hostname -I)"
+echo -e "${CM}${CL} \r"
+echo -en "${GN} Network Connected: ${BL}$(hostname -I)${CL} "
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Updating Container OS... \e[0m"
-apt-get update &>/dev/null
+echo -en "${GN} Updating Container OS... "
+apt update &>/dev/null
 apt-get -qqy upgrade &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Installing Dependencies... \e[0m"
-apt-get update &>/dev/null
-apt-get -qqy install \
-    curl \
-    sudo &>/dev/null
+echo -en "${GN} Installing Dependencies... "
+apt-get install -y curl &>/dev/null
+apt-get install -y sudo &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Installing pip3... \e[0m"
+echo -en "${GN} Installing pip3... "
 apt-get install -y python3-pip &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Installing Docker... \e[0m"
+echo -en "${GN} Installing Docker... "
 DOCKER_CONFIG_PATH='/etc/docker/daemon.json'
 mkdir -p $(dirname $DOCKER_CONFIG_PATH)
 cat >$DOCKER_CONFIG_PATH <<'EOF'
@@ -64,11 +72,13 @@ cat >$DOCKER_CONFIG_PATH <<'EOF'
 }
 EOF
 sh <(curl -sSL https://get.docker.com) &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Pulling Portainer Image...\e[0m"
+echo -en "${GN} Pulling Portainer Image... "
 docker pull portainer/portainer-ce:latest &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Installing Portainer... \e[0m"
+echo -en "${GN} Installing Portainer Image... "
 docker volume create portainer_data >/dev/null
 docker run -d \
   -p 8000:8000 \
@@ -78,11 +88,13 @@ docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v portainer_data:/data \
   portainer/portainer-ce:latest &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Pulling Home Assistant Image...\e[0m"
+echo -en "${GN} Pulling Home Assistant Image... "
 docker pull homeassistant/home-assistant:stable &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Installing Home Assistant... \e[0m"
+echo -en "${GN} Installing Home Assistant Image... "
 docker volume create hass_config >/dev/null
 docker run -d \
   --name homeassistant \
@@ -92,11 +104,11 @@ docker run -d \
   -v /dev:/dev \
   -v hass_config:/config \
   -v /etc/localtime:/etc/localtime:ro \
-  -v /etc/timezone:/etc/timezone:ro \
   --net=host \
   homeassistant/home-assistant:stable &>/dev/null
+echo -e "${CM}${CL} \r"
 
-echo -e "${CHECKMARK} \e[1;92m Creating Update Menu Script... \e[0m"
+echo -en "${GN} Creating Update Menu Script... "
 pip3 install runlike &>/dev/null
 UPDATE_PATH='/root/update'
 UPDATE_CONTAINERS_PATH='/root/update-containers.sh'
@@ -277,11 +289,12 @@ for container in ${CONTAINER_LIST}; do
 done
 EOF
 sudo chmod +x /root/update-containers.sh
-
-echo -e "${CHECKMARK} \e[1;92m Customizing LXC... \e[0m"
-rm /etc/motd 
-rm /etc/update-motd.d/10-uname 
-touch ~/.hushlogin 
+echo -e "${CM}${CL} \r"
+mkdir /root/hass_config
+echo -en "${GN} Customizing Container... "
+rm /etc/motd
+rm /etc/update-motd.d/10-uname
+touch ~/.hushlogin
 GETTY_OVERRIDE="/etc/systemd/system/container-getty@1.service.d/override.conf"
 mkdir -p $(dirname $GETTY_OVERRIDE)
 cat << EOF > $GETTY_OVERRIDE
@@ -291,6 +304,10 @@ ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,3840
 EOF
 systemctl daemon-reload
 systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
-mkdir /root/hass_config
-echo -e "${CHECKMARK} \e[1;92m Cleanup... \e[0m"
-rm -rf /ha_setup.sh /var/{cache,log}/* /var/lib/apt/lists/*
+echo -e "${CM}${CL} \r"
+
+echo -en "${GN} Cleanup... "
+apt-get autoremove >/dev/null
+apt-get autoclean >/dev/null
+rm -rf /var/{cache,log}/* /var/lib/apt/lists/*
+echo -e "${CM}${CL} \n"

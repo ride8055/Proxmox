@@ -1,21 +1,11 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o errtrace
-set -o nounset
-set -o pipefail
+set -o errexit 
+set -o errtrace 
+set -o nounset 
+set -o pipefail 
 shopt -s expand_aliases
 alias die='EXIT=$? LINE=$LINENO error_exit'
-CROSS='\033[1;31m\xE2\x9D\x8C\033[0m'
-YW=`echo "\033[33m"`
-BL=`echo "\033[36m"`
-RD=`echo "\033[01;31m"`
-CM='\xE2\x9C\x94\033'
-GN=`echo "\033[1;92m"`
-CL=`echo "\033[m"`
-RETRY_NUM=5
-RETRY_EVERY=3
-NUM=$RETRY_NUM
 trap die ERR
 trap 'die "Script interrupted."' INT
 
@@ -32,6 +22,16 @@ function msg() {
   echo -e "$TEXT"
 }
 
+CROSS='\033[1;31m\xE2\x9D\x8C\033[0m'
+RD=`echo "\033[01;31m"`
+BL=`echo "\033[36m"`
+CM='\xE2\x9C\x94\033'
+GN=`echo "\033[1;92m"`
+CL=`echo "\033[m"`
+RETRY_NUM=5
+RETRY_EVERY=3
+NUM=$RETRY_NUM
+
 echo -en "${GN} Setting up Container OS... "
 sed -i "/$LANG/ s/\(^# \)//" /etc/locale.gen
 locale-gen >/dev/null
@@ -46,41 +46,54 @@ while [ "$(hostname -I)" = "" ]; do
   fi
 done
 echo -e "${CM}${CL} \r"
+echo -en "${GN} Network Connected: ${BL}$(hostname -I)${CL} "
+echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Updating Container OS... "
-apt-get update &>/dev/null
+apt update &>/dev/null
 apt-get -qqy upgrade &>/dev/null
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Installing Dependencies... "
-apt-get update &>/dev/null
-apt-get -qqy install \
-    curl \
-    sudo &>/dev/null
+apt-get install -y curl &>/dev/null
+apt-get install -y sudo &>/dev/null
+apt-get install -y git &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Installing pip3... "
-apt-get install python3-pip -y &>/dev/null
+echo -en "${GN} Setting up Node.js Repository... "
+sudo curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Installing ESPHome... "
-pip3 install esphome &>/dev/null
+echo -en "${GN} Installing Node.js... "
+sudo apt-get install -y nodejs git make g++ gcc &>/dev/null
+echo -e "${CM}${CL} \r"
+ 
+echo -en "${GN} Installing Yarn... "
+npm install --global yarn &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Installing ESPHome Dashboard... "
-pip3 install tornado esptool &>/dev/null
+echo -en "${GN} Installing Dashy (Patience)... "
+git clone https://github.com/Lissy93/dashy.git &>/dev/null
+cd /dashy
+yarn &>/dev/null
+export NODE_OPTIONS=--max-old-space-size=1000 &>/dev/null
+yarn build &>/dev/null
+echo -e "${CM}${CL} \r"
 
-service_path="/etc/systemd/system/esphomeDashboard.service"
-echo "[Unit]
-Description=ESPHome Dashboard
-After=network.target
+echo -en "${GN} Creating Dashy Service... "
+cat <<EOF > /etc/systemd/system/dashy.service
+[Unit]
+Description=dashy
+
 [Service]
-ExecStart=/usr/local/bin/esphome /root/config/ dashboard
-Restart=always
-User=root
+Type=simple
+WorkingDirectory=/dashy
+ExecStart=/usr/bin/yarn start
 [Install]
-WantedBy=multi-user.target" > $service_path
-systemctl enable esphomeDashboard.service &>/dev/null
+WantedBy=multi-user.target
+EOF
+sudo systemctl start dashy &>/dev/null
+sudo systemctl enable dashy &>/dev/null
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Customizing Container... "
@@ -96,9 +109,10 @@ ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,3840
 EOF
 systemctl daemon-reload
 systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
-systemctl start esphomeDashboard
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Cleanup... "
-rm -rf /esphome_setup.sh /var/{cache,log}/* /var/lib/apt/lists/*
-echo -e "${CM}${CL} \r"
+apt-get autoremove >/dev/null
+apt-get autoclean >/dev/null
+rm -rf /var/{cache,log}/* /var/lib/apt/lists/*
+echo -e "${CM}${CL} \n"

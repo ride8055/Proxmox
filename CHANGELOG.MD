@@ -2,6 +2,87 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2022-03-02
+
+### Changed
+
+- **Proxmox LXC Updater**
+  - New Script
+- **Dashy LXC**
+  - New Script
+
+## 2022-03-01
+
+### Changed
+
+- **Daemon Sync Server LXC**
+  - New Script
+
+## 2022-02-28
+
+### Changed
+
+- **Vaultwarden LXC**
+  - Add Update Script
+
+## 2022-02-24
+
+### Changed
+
+- **Nginx Proxy Manager LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+
+## 2022-02-23
+
+### Changed
+
+- **Adguard Home LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+- **Zigbee2MQTT LXC**
+  - Using NEW Privileged Install Script
+- **Home Assistant Container LXC**
+  - Update Menu usability improvements
+
+## 2022-02-22
+
+### Changed
+
+- **Home Assistant Container LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+- **Node-Red LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+- **Mariadb LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+- **MQTT LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+- **Debian 11 LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+- **Ubuntu 21.10 LXC**
+  - Using NEW Privileged/Unprivileged Install Script
+
+## 2022-02-20
+
+### Changed
+
+- **Home Assistant Container LXC**
+  - New Script to migrate to the latest Update Menu
+
+## 2022-02-19
+
+### Changed
+
+- **Nginx Proxy Manager LXC**
+  - Add Update Script
+- **Vaultwarden LXC**
+  - Make unattended install & Cleanup Script
+
+## 2022-02-18
+
+### Changed
+
+- **Node-Red LXC**
+  - Add Install [Themes Script](https://raw.githubusercontent.com/tteck/Proxmox/main/misc/images/node-red-themes.png)
+
 ## 2022-02-16
 
 ### Changed
@@ -37,7 +118,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **GamUntu LXC**
-  - New script
+  - New Script
 - **Jellyfin Media Server LXC**
   - new script to fix [start issue](https://github.com/tteck/Proxmox/issues/29#issue-1127457380)
 - **MotionEye NVR LXC**
