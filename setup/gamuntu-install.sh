@@ -50,57 +50,67 @@ echo -en "${GN} Network Connected: ${BL}$(hostname -I)${CL} "
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Updating Container OS... "
-apt update &>/dev/null
+apt-get update &>/dev/null
 apt-get -qqy upgrade &>/dev/null
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Installing Dependencies... "
-apt-get install -y curl &>/dev/null
-apt-get install -y sudo &>/dev/null
-apt-get install -y git &>/dev/null
+apt-get update &>/dev/null
+apt-get -qqy install \
+    curl \
+    sudo \
+    libnet-ssleay-perl \
+    libauthen-pam-perl \
+    libio-pty-perl \
+    unzip \
+    shared-mime-info &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Setting up Node.js Repository... "
-sudo curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - &>/dev/null
+echo -en "${GN} Downloading Webmin... "
+wget http://prdownloads.sourceforge.net/webadmin/webmin_1.984_all.deb &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Installing Node.js... "
-sudo apt-get install -y nodejs git make g++ gcc &>/dev/null
-echo -e "${CM}${CL} \r"
- 
-echo -en "${GN} Installing Yarn... "
-npm install --global yarn &>/dev/null
+echo -en "${GN} Installing Webmin... "
+dpkg --install webmin_1.984_all.deb &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Installing Dashy (Patience)... "
-git clone https://github.com/Lissy93/dashy.git &>/dev/null
-cd /dashy
-yarn &>/dev/null
-export NODE_OPTIONS=--max-old-space-size=1000 &>/dev/null
-yarn build &>/dev/null
+echo -en "${GN} Setting Default Webmin usermame & password to root... "
+/usr/share/webmin/changepass.pl /etc/webmin root root &>/dev/null
+rm -rf /root/webmin_1.984_all.deb
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Creating Dashy Service... "
-cat <<EOF > /etc/systemd/system/dashy.service
-[Unit]
-Description=dashy
+echo -en "${GN} Setting Up Hardware Acceleration... "  
+apt-get -y install \
+    va-driver-all \
+    ocl-icd-libopencl1 \
+    beignet-opencl-icd &>/dev/null
+    
+/bin/chgrp video /dev/dri
+/bin/chmod 755 /dev/dri
+/bin/chmod 660 /dev/dri/*
+echo -e "${CM}${CL} \r"
 
-[Service]
-Type=simple
-WorkingDirectory=/dashy
-ExecStart=/usr/bin/yarn start
-[Install]
-WantedBy=multi-user.target
+echo -en "${GN} Installing Docker... "
+DOCKER_CONFIG_PATH='/etc/docker/daemon.json'
+mkdir -p $(dirname $DOCKER_CONFIG_PATH)
+cat >$DOCKER_CONFIG_PATH <<'EOF'
+{
+  "log-driver": "journald"
+}
 EOF
-sudo systemctl start dashy &>/dev/null
-sudo systemctl enable dashy &>/dev/null
+sh <(curl -sSL https://get.docker.com) &>/dev/null
+echo -e "${CM}${CL} \r"
+
+echo -en "${GN} Installing Docker Compose... "
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose &>/dev/null
+sudo chmod +x /usr/local/bin/docker-compose
+docker network create proxy &>/dev/null
 echo -e "${CM}${CL} \r"
 
 PASS=$(grep -w "root" /etc/shadow | cut -b6);
   if [[ $PASS != $ ]]; then
 echo -en "${GN} Customizing Container... "
-rm /etc/motd
-rm /etc/update-motd.d/10-uname
+chmod -x /etc/update-motd.d/*
 touch ~/.hushlogin
 GETTY_OVERRIDE="/etc/systemd/system/container-getty@1.service.d/override.conf"
 mkdir -p $(dirname $GETTY_OVERRIDE)
@@ -113,7 +123,7 @@ systemctl daemon-reload
 systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
 echo -e "${CM}${CL} \r"
   fi
-
+  
 echo -en "${GN} Cleanup... "
 apt-get autoremove >/dev/null
 apt-get autoclean >/dev/null

@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-clear
 YW=`echo "\033[33m"`
 BL=`echo "\033[36m"`
 RD=`echo "\033[01;31m"`
 CM='\xE2\x9C\x94\033'
 GN=`echo "\033[1;92m"`
 CL=`echo "\033[m"`
+APP="Vaultwarden"
+HN=$(echo ${APP,,} | tr -d ' ')
 while true; do
-    read -p "This will create a New Dashy LXC. Proceed(y/n)?" yn
+    read -p "This will create a New ${APP} LXC. Proceed(y/n)?" yn
     case $yn in
         [Yy]* ) break;;
         [Nn]* ) exit;;
@@ -17,14 +18,13 @@ done
 clear
 function header_info {
 echo -e "${RD}
-  _____            _           
- |  __ \          | |          
- | |  | | __ _ ___| |__  _   _ 
- | |  | |/ _  / __|  _ \| | | |
- | |__| | (_| \__ \ | | | |_| |
- |_____/ \__,_|___/_| |_|\__, |
-                          __/ |
-                         |___/ 
+ __      __         _ _                         _            
+ \ \    / /        | | |                       | |           
+  \ \  / /_ _ _   _| | |___      ____ _ _ __ __| | ___ _ __  
+   \ \/ / _  | | | | | __\ \ /\ / / _  |  __/ _  |/ _ \  _ \ 
+    \  / (_| | |_| | | |_ \ V  V / (_| | | | (_| |  __/ | | |
+     \/ \__,_|\__,_|_|\__| \_/\_/ \__,_|_|  \__,_|\___|_| |_|
+                                                                                                                        
 ${CL}"
 }
 
@@ -175,14 +175,14 @@ pushd $TEMP_DIR >/dev/null
 export CTID=$(pvesh get /cluster/nextid)
 export PCT_OSTYPE=debian
 export PCT_OSVERSION=11
-export PCT_DISK_SIZE=3
+export PCT_DISK_SIZE=8
 export PCT_OPTIONS="
   -features $FEATURES
-  -hostname dashy
+  -hostname $HN
   -net0 name=eth0,bridge=vmbr0,ip=dhcp
   -onboot 1
-  -cores 2
-  -memory 2048
+  -cores 4
+  -memory 4096
   -unprivileged ${IM}
   ${PW}
 "
@@ -192,6 +192,11 @@ STORAGE_TYPE=$(pvesm status -storage $(pct config $CTID | grep rootfs | awk -F "
 if [ "$STORAGE_TYPE" == "zfspool" ]; then
   warn "Some addons may not work due to ZFS not supporting 'fallocate'."
 fi
+LXC_CONFIG=/etc/pve/lxc/${CTID}.conf
+cat <<EOF >> $LXC_CONFIG
+lxc.cgroup2.devices.allow: a
+lxc.cap.drop:
+EOF
 
 echo -en "${GN} Starting LXC Container... "
 pct start $CTID
@@ -199,10 +204,10 @@ echo -e "${CM}${CL} \r"
 
 alias lxc-cmd="lxc-attach -n $CTID --"
 
-lxc-cmd bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/setup/dashy-install.sh)" || exit
+lxc-cmd bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/setup/$HN-install.sh)" || exit
 
 IP=$(pct exec $CTID ip a s dev eth0 | sed -n '/inet / s/\// /p' | awk '{print $2}')
 
-echo -e "${GN}Successfully created Dashy LXC to${CL} ${BL}$CTID${CL}.
-${BL}Dashy${CL} should be reachable by going to the following URL.
-         ${BL}http://${IP}:4000${CL} \n"
+echo -e "${GN}Successfully created ${APP} LXC to${CL} ${BL}$CTID${CL}.
+${BL}${APP}${CL} should be reachable by going to the following URL.
+         ${BL}http://${IP}:8000${CL} \n"

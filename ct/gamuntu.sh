@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-clear
 YW=`echo "\033[33m"`
 BL=`echo "\033[36m"`
 RD=`echo "\033[01;31m"`
 CM='\xE2\x9C\x94\033'
 GN=`echo "\033[1;92m"`
 CL=`echo "\033[m"`
+APP="GamUntu"
+HN=$(echo ${APP,,} | tr -d ' ')
 while true; do
-    read -p "This will create a New Dashy LXC. Proceed(y/n)?" yn
+    read -p "This will create a New ${APP} LXC. Proceed(y/n)?" yn
     case $yn in
         [Yy]* ) break;;
         [Nn]* ) exit;;
@@ -16,22 +17,20 @@ while true; do
 done
 clear
 function header_info {
-echo -e "${RD}
-  _____            _           
- |  __ \          | |          
- | |  | | __ _ ___| |__  _   _ 
- | |  | |/ _  / __|  _ \| | | |
- | |__| | (_| \__ \ | | | |_| |
- |_____/ \__,_|___/_| |_|\__, |
-                          __/ |
-                         |___/ 
+echo -e "${GN}
+   _____                 _    _       _         
+  / ____|               | |  | |     | |        
+ | |  __  __ _ _ __ ___ | |  | |_ __ | |_ _   _ 
+ | | |_ |/ _  |  _   _ \| |  | |  _ \| __| | | |
+ | |__| | (_| | | | | | | |__| | | | | |_| |_| |
+  \_____|\__,_|_| |_| |_|\____/|_| |_|\__|\__,_|
 ${CL}"
 }
 
 header_info
 show_menu(){
-    printf "    ${YW} 1)${YW} Privileged ${CL}\n"
-    printf "    ${YW} 2)${GN} Unprivileged ${CL}\n"
+    printf "    ${YW} 1)${GN} Privileged ${CL}\n"
+    printf "    ${YW} 2)${RD} Unprivileged (no device passthrough)${CL}\n"
 
     printf "Please choose a Install Method and hit enter or ${RD}x${CL} to exit."
     read opt
@@ -173,12 +172,12 @@ TEMP_DIR=$(mktemp -d)
 pushd $TEMP_DIR >/dev/null
 
 export CTID=$(pvesh get /cluster/nextid)
-export PCT_OSTYPE=debian
-export PCT_OSVERSION=11
-export PCT_DISK_SIZE=3
+export PCT_OSTYPE=ubuntu
+export PCT_OSVERSION=21.10
+export PCT_DISK_SIZE=8
 export PCT_OPTIONS="
   -features $FEATURES
-  -hostname dashy
+  -hostname $HN
   -net0 name=eth0,bridge=vmbr0,ip=dhcp
   -onboot 1
   -cores 2
@@ -192,6 +191,23 @@ STORAGE_TYPE=$(pvesm status -storage $(pct config $CTID | grep rootfs | awk -F "
 if [ "$STORAGE_TYPE" == "zfspool" ]; then
   warn "Some addons may not work due to ZFS not supporting 'fallocate'."
 fi
+LXC_CONFIG=/etc/pve/lxc/${CTID}.conf
+cat <<EOF >> $LXC_CONFIG
+lxc.cgroup2.devices.allow: a
+lxc.cap.drop: 
+lxc.cgroup2.devices.allow: c 188:* rwm
+lxc.cgroup2.devices.allow: c 189:* rwm
+lxc.cgroup2.devices.allow: c 226:0 rwm
+lxc.cgroup2.devices.allow: c 226:128 rwm
+lxc.cgroup2.devices.allow: c 29:0 rwm
+lxc.mount.entry: /dev/uinput dev/uinput none bind,optional,create=dir
+lxc.mount.entry: /dev/dri dev/dri none bind,optional,create=dir
+lxc.mount.entry: /dev/fb0 dev/fb0 none bind,optional,create=file
+lxc.mount.entry: /dev/dri/renderD128 dev/renderD128 none bind,optional,create=file
+lxc.mount.entry: /dev/serial/by-id               dev/serial/by-id         none bind,optional,create=dir
+lxc.mount.entry: /dev/ttyUSB0                    dev/ttyUSB0             none bind,optional,create=file
+lxc.mount.entry: /dev/ttyACM0                    dev/ttyACM0             none bind,optional,create=file
+EOF
 
 echo -en "${GN} Starting LXC Container... "
 pct start $CTID
@@ -199,10 +215,10 @@ echo -e "${CM}${CL} \r"
 
 alias lxc-cmd="lxc-attach -n $CTID --"
 
-lxc-cmd bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/setup/dashy-install.sh)" || exit
+lxc-cmd bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/setup/$HN-install.sh)" || exit
 
 IP=$(pct exec $CTID ip a s dev eth0 | sed -n '/inet / s/\// /p' | awk '{print $2}')
 
-echo -e "${GN}Successfully created Dashy LXC to${CL} ${BL}$CTID${CL}.
-${BL}Dashy${CL} should be reachable by going to the following URL.
-         ${BL}http://${IP}:4000${CL} \n"
+echo -e "${GN}Successfully created ${APP} LXC to${CL} ${BL}$CTID${CL}.
+${BL}Webmin${CL} should be reachable by going to the following URL.
+         ${BL}https://${IP}:10000${CL} \n"

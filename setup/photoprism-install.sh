@@ -57,7 +57,13 @@ echo -e "${CM}${CL} \r"
 echo -en "${GN} Installing Dependencies... "
 apt-get install -y curl &>/dev/null
 apt-get install -y sudo &>/dev/null
+apt-get install -y gcc &>/dev/null
+apt-get install -y g++ &>/dev/null
 apt-get install -y git &>/dev/null
+apt-get install -y gnupg &>/dev/null
+apt-get install -y make &>/dev/null
+apt-get install -y zip &>/dev/null
+apt-get install -y unzip &>/dev/null
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Setting up Node.js Repository... "
@@ -67,33 +73,72 @@ echo -e "${CM}${CL} \r"
 echo -en "${GN} Installing Node.js... "
 sudo apt-get install -y nodejs git make g++ gcc &>/dev/null
 echo -e "${CM}${CL} \r"
- 
-echo -en "${GN} Installing Yarn... "
-npm install --global yarn &>/dev/null
+
+echo -en "${GN} Installing Golang... "
+wget https://golang.org/dl/go1.17.8.linux-amd64.tar.gz &>/dev/null
+sudo tar -C /usr/local -xzf go1.17.8.linux-amd64.tar.gz &>/dev/null
+sudo ln -s /usr/local/go/bin/go /usr/local/bin/go &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Installing Dashy (Patience)... "
-git clone https://github.com/Lissy93/dashy.git &>/dev/null
-cd /dashy
-yarn &>/dev/null
-export NODE_OPTIONS=--max-old-space-size=1000 &>/dev/null
-yarn build &>/dev/null
+echo -en "${GN} Installing Tensorflow... "
+wget https://dl.photoprism.org/tensorflow/linux/libtensorflow-linux-cpu-1.15.2.tar.gz &>/dev/null
+sudo tar -C /usr/local -xzf libtensorflow-linux-cpu-1.15.2.tar.gz &>/dev/null
+sudo ldconfig &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Creating Dashy Service... "
-cat <<EOF > /etc/systemd/system/dashy.service
-[Unit]
-Description=dashy
+sudo useradd --system photoprism &>/dev/null
+sudo mkdir -p /opt/photoprism/bin
+sudo mkdir /var/lib/photoprism
+sudo chown photoprism:photoprism /var/lib/photoprism &>/dev/null
+
+echo -en "${GN} Cloning PhotoPrism... "
+git clone https://github.com/photoprism/photoprism.git &>/dev/null
+cd photoprism
+git checkout release &>/dev/null
+echo -e "${CM}${CL} \r"
+
+echo -en "${GN} Building PhotoPrism... "
+sudo make all &>/dev/null
+sudo ./scripts/build.sh prod /opt/photoprism/bin/photoprism &>/dev/null
+sudo cp -a assets/ /opt/photoprism/assets/ &>/dev/null
+sudo chown -R photoprism:photoprism /opt/photoprism 
+echo -e "${CM}${CL} \r"
+
+env_path="/var/lib/photoprism/.env"
+echo " 
+PHOTOPRISM_ADMIN_PASSWORD='photoprism'
+PHOTOPRISM_STORAGE_PATH='/var/lib/photoprism'
+PHOTOPRISM_ORIGINALS_PATH='/var/lib/photoprism/photos/Originals'
+PHOTOPRISM_IMPORT_PATH='/var/lib/photoprism/photos/Import'
+# Uncomment below if using MariaDB/MySQL instead of SQLite (the default)
+# PHOTOPRISM_DATABASE_DRIVER='mysql'
+# PHOTOPRISM_DATABASE_SERVER='MYSQL_IP_HERE'
+# PHOTOPRISM_DATABASE_NAME='DB_NAME'
+# PHOTOPRISM_DATABASE_USER='USER_NAME'
+# PHOTOPRISM_DATABASE_PASSWORD='PASSWORD'
+" > $env_path
+
+echo -en "${GN} Creating Service file photoprism.service... "
+service_path="/etc/systemd/system/photoprism.service"
+
+echo "[Unit]
+Description=PhotoPrism service
+After=network.target
 
 [Service]
-Type=simple
-WorkingDirectory=/dashy
-ExecStart=/usr/bin/yarn start
+Type=forking
+User=photoprism
+Group=photoprism
+WorkingDirectory=/opt/photoprism
+EnvironmentFile=/var/lib/photoprism/.env
+ExecStart=/opt/photoprism/bin/photoprism up -d
+ExecStop=/opt/photoprism/bin/photoprism down
+
 [Install]
-WantedBy=multi-user.target
-EOF
-sudo systemctl start dashy &>/dev/null
-sudo systemctl enable dashy &>/dev/null
+WantedBy=multi-user.target" > $service_path
+sudo systemctl daemon-reload
+sudo systemctl start photoprism
+sudo systemctl enable photoprism &>/dev/null
 echo -e "${CM}${CL} \r"
 
 PASS=$(grep -w "root" /etc/shadow | cut -b6);
@@ -113,7 +158,7 @@ systemctl daemon-reload
 systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
 echo -e "${CM}${CL} \r"
   fi
-
+  
 echo -en "${GN} Cleanup... "
 apt-get autoremove >/dev/null
 apt-get autoclean >/dev/null

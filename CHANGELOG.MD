@@ -2,6 +2,65 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2022-03-12
+
+### Changed
+
+- **PhotoPrism LXC**
+  - New Script V2
+
+## 2022-03-11
+
+### Changed
+
+- **Vaultwarden LXC**
+  - New V2 Install Script
+
+## 2022-03-08
+
+### Changed
+
+- **Scripts** (V2)
+  - Choose between Privileged or Unprivileged CT and Automatic or Password Login 
+- **ESPHome LXC**
+  - New V2 Install Script
+- **Zwavejs2MQTT LXC**
+  - New V2 Install Script
+- **Motioneye LXC**
+  - New V2 Install Script
+- **Pihole LXC**
+  - New V2 Install Script
+- **GamUntu LXC**
+  - New V2 Install Script
+
+## 2022-03-06
+
+### Changed
+
+- **Zwavejs2MQTT LXC**
+  - New GUI script to copy data from one Zwavejs2MQTT LXC to another Zwavejs2MQTT LXC
+
+## 2022-03-05
+
+### Changed
+
+- **Homebridge LXC**
+  - New Script V2
+
+## 2022-03-04
+
+### Changed
+
+- **Proxmox Kernel Clean**
+  - New Script
+
+## 2022-03-03
+
+### Changed
+
+- **WireGuard LXC**
+  - New Script V2
+
 ## 2022-03-02
 
 ### Changed
@@ -9,14 +68,18 @@ All notable changes to this project will be documented in this file.
 - **Proxmox LXC Updater**
   - New Script
 - **Dashy LXC**
-  - New Script
+  - New Script V2
+- **Grafana LXC**
+  - New Script V2
+- **InfluxDB/Telegraf LXC**
+  - New Script V2
 
 ## 2022-03-01
 
 ### Changed
 
 - **Daemon Sync Server LXC**
-  - New Script
+  - New Script V2
 
 ## 2022-02-28
 
@@ -30,16 +93,16 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **Nginx Proxy Manager LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 
 ## 2022-02-23
 
 ### Changed
 
 - **Adguard Home LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 - **Zigbee2MQTT LXC**
-  - Using NEW Privileged Install Script
+  - New V2 Install Script
 - **Home Assistant Container LXC**
   - Update Menu usability improvements
 
@@ -48,17 +111,17 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **Home Assistant Container LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 - **Node-Red LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 - **Mariadb LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 - **MQTT LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 - **Debian 11 LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 - **Ubuntu 21.10 LXC**
-  - Using NEW Privileged/Unprivileged Install Script
+  - New V2 Install Script
 
 ## 2022-02-20
 

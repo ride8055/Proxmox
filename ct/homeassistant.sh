@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 YW=`echo "\033[33m"`
-BL=`echo "\033[36m"`
+BL=`echo "\033[94m"`
 RD=`echo "\033[01;31m"`
 CM='\xE2\x9C\x94\033'
 GN=`echo "\033[1;92m"`
@@ -36,8 +36,8 @@ show_menu(){
 }
 
 option_picked(){
-    message=${@:-"${CL}Error: No message passed"}
-    printf " ${YW}${message}${CL}\n"
+    message1=${@:-"${CL}Error: No message passed"}
+    printf " ${YW}${message1}${CL}\n"
 }
 show_menu
 while [ $opt != '' ]
@@ -66,6 +66,50 @@ while [ $opt != '' ]
         *)clear;
             option_picked "Please choose a Install Method from the menu";
             show_menu;
+        ;;
+      esac
+    fi
+  done
+show_menu2(){
+    printf "    ${YW} 1)${GN} Use Automatic Login ${CL}\n"
+    printf "    ${YW} 2)${GN} Use Password (changeme) ${CL}\n"
+
+    printf "Please choose a Password Type and hit enter or ${RD}x${CL} to exit."
+    read opt
+}
+
+option_picked(){
+    message=${@:-"${CL}Error: No message passed"}
+    printf " ${YW}${message1}${CL}\n"
+    printf " ${YW}${message}${CL}\n"
+}
+show_menu2
+while [ $opt != '' ]
+    do
+    if [ $opt = '' ]; then
+      exit;
+    else
+      case $opt in
+        1) clear;
+            header_info;
+            option_picked "Using Automatic Login";
+            PW=" "
+            break;
+        ;;
+        2) clear;
+            header_info;
+            option_picked "Using Password (changeme)";
+            PW="-password changeme"
+            break;
+        ;;
+
+        x)exit;
+        ;;
+        \n)exit;
+        ;;
+        *)clear;
+            option_picked "Please choose a Password Type from the menu";
+            show_menu2;
         ;;
       esac
     fi
@@ -129,7 +173,7 @@ pushd $TEMP_DIR >/dev/null
 export CTID=$(pvesh get /cluster/nextid)
 export PCT_OSTYPE=debian
 export PCT_OSVERSION=11
-export PCT_DISK_SIZE=8
+export PCT_DISK_SIZE=16
 export PCT_OPTIONS="
   -features $FEATURES
   -hostname homeassistant
@@ -138,12 +182,12 @@ export PCT_OPTIONS="
   -cores 2
   -memory 2048
   -unprivileged ${IM}
+  ${PW}
 "
 bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/create_lxc.sh)" || exit
 
 STORAGE_TYPE=$(pvesm status -storage $(pct config $CTID | grep rootfs | awk -F ":" '{print $2}') | awk 'NR>1 {print $2}')
 if [ "$STORAGE_TYPE" == "zfspool" ]; then
-  wget -qL -O fuse-overlayfs https://github.com/containers/fuse-overlayfs/releases/download/v1.8.2/fuse-overlayfs-x86_64
   warn "Some addons may not work due to ZFS not supporting 'fallocate'."
 fi
 LXC_CONFIG=/etc/pve/lxc/${CTID}.conf
@@ -154,10 +198,6 @@ EOF
 
 echo -en "${GN} Starting LXC Container... "
 pct start $CTID
-if [ "$STORAGE_TYPE" == "zfspool" ]; then
-pct push $CTID fuse-overlayfs /usr/local/bin/fuse-overlayfs -perms 755
-info "${BL}Using fuse-overlayfs.${CL}"
-fi
 echo -e "${CM}${CL} \r"
 
 alias lxc-cmd="lxc-attach -n $CTID --"

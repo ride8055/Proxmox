@@ -50,50 +50,19 @@ echo -en "${GN} Network Connected: ${BL}$(hostname -I)${CL} "
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Updating Container OS... "
-apt update &>/dev/null
+apt-get update &>/dev/null
 apt-get -qqy upgrade &>/dev/null
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Installing Dependencies... "
-apt-get install -y curl &>/dev/null
-apt-get install -y sudo &>/dev/null
-apt-get install -y git &>/dev/null
+apt-get update &>/dev/null
+apt-get -qqy install \
+    curl \
+    sudo &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Setting up Node.js Repository... "
-sudo curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - &>/dev/null
-echo -e "${CM}${CL} \r"
-
-echo -en "${GN} Installing Node.js... "
-sudo apt-get install -y nodejs git make g++ gcc &>/dev/null
-echo -e "${CM}${CL} \r"
- 
-echo -en "${GN} Installing Yarn... "
-npm install --global yarn &>/dev/null
-echo -e "${CM}${CL} \r"
-
-echo -en "${GN} Installing Dashy (Patience)... "
-git clone https://github.com/Lissy93/dashy.git &>/dev/null
-cd /dashy
-yarn &>/dev/null
-export NODE_OPTIONS=--max-old-space-size=1000 &>/dev/null
-yarn build &>/dev/null
-echo -e "${CM}${CL} \r"
-
-echo -en "${GN} Creating Dashy Service... "
-cat <<EOF > /etc/systemd/system/dashy.service
-[Unit]
-Description=dashy
-
-[Service]
-Type=simple
-WorkingDirectory=/dashy
-ExecStart=/usr/bin/yarn start
-[Install]
-WantedBy=multi-user.target
-EOF
-sudo systemctl start dashy &>/dev/null
-sudo systemctl enable dashy &>/dev/null
+echo -en "${GN} Installing Pi-hole... "
+curl -sSL https://install.pi-hole.net | bash
 echo -e "${CM}${CL} \r"
 
 PASS=$(grep -w "root" /etc/shadow | cut -b6);
@@ -113,7 +82,7 @@ systemctl daemon-reload
 systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
 echo -e "${CM}${CL} \r"
   fi
-
+  
 echo -en "${GN} Cleanup... "
 apt-get autoremove >/dev/null
 apt-get autoclean >/dev/null

@@ -48,6 +48,22 @@ done
 echo -e "${CM}${CL} \r"
 echo -en "${GN} Network Connected: ${BL}$(hostname -I)${CL} "
 echo -e "${CM}${CL} \r"
+OPTIONS_PATH='/options.conf'
+cat >$OPTIONS_PATH <<'EOF'
+IPv4dev=eth0
+install_user=root
+VPN=wireguard
+pivpnNET=10.6.0.0
+subnetClass=24
+ALLOWED_IPS="0.0.0.0/0, ::0/0"
+pivpnMTU=1420
+pivpnPORT=51820
+pivpnDNS1=1.1.1.1
+pivpnDNS2=8.8.8.8
+pivpnHOST=
+pivpnPERSISTENTKEEPALIVE=25
+UNATTUPG=1
+EOF
 
 echo -en "${GN} Updating Container OS... "
 apt update &>/dev/null
@@ -57,45 +73,14 @@ echo -e "${CM}${CL} \r"
 echo -en "${GN} Installing Dependencies... "
 apt-get install -y curl &>/dev/null
 apt-get install -y sudo &>/dev/null
-apt-get install -y git &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Setting up Node.js Repository... "
-sudo curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - &>/dev/null
-echo -e "${CM}${CL} \r"
-
-echo -en "${GN} Installing Node.js... "
-sudo apt-get install -y nodejs git make g++ gcc &>/dev/null
+echo -en "${GN} Installing WireGuard (using pivpn.io)... "
+curl -s -L https://install.pivpn.io > install.sh 
+chmod +x install.sh
+./install.sh --unattended options.conf &>/dev/null
 echo -e "${CM}${CL} \r"
  
-echo -en "${GN} Installing Yarn... "
-npm install --global yarn &>/dev/null
-echo -e "${CM}${CL} \r"
-
-echo -en "${GN} Installing Dashy (Patience)... "
-git clone https://github.com/Lissy93/dashy.git &>/dev/null
-cd /dashy
-yarn &>/dev/null
-export NODE_OPTIONS=--max-old-space-size=1000 &>/dev/null
-yarn build &>/dev/null
-echo -e "${CM}${CL} \r"
-
-echo -en "${GN} Creating Dashy Service... "
-cat <<EOF > /etc/systemd/system/dashy.service
-[Unit]
-Description=dashy
-
-[Service]
-Type=simple
-WorkingDirectory=/dashy
-ExecStart=/usr/bin/yarn start
-[Install]
-WantedBy=multi-user.target
-EOF
-sudo systemctl start dashy &>/dev/null
-sudo systemctl enable dashy &>/dev/null
-echo -e "${CM}${CL} \r"
-
 PASS=$(grep -w "root" /etc/shadow | cut -b6);
   if [[ $PASS != $ ]]; then
 echo -en "${GN} Customizing Container... "

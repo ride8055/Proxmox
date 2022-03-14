@@ -49,15 +49,12 @@ echo -e "${CM}${CL} \r"
 echo -en "${GN} Network Connected: ${BL}$(hostname -I)${CL} "
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Updating Container OS... "
-apt update &>/dev/null
-apt-get -qqy upgrade &>/dev/null
-echo -e "${CM}${CL} \r"
-
 echo -en "${GN} Installing Dependencies... "
-apt-get install -y curl &>/dev/null
-apt-get install -y sudo &>/dev/null
-apt-get install -y git &>/dev/null
+apt-get update &>/dev/null
+apt-get -qqy install \
+    curl \
+    sudo \
+    unzip &>/dev/null
 echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Setting up Node.js Repository... "
@@ -66,34 +63,35 @@ echo -e "${CM}${CL} \r"
 
 echo -en "${GN} Installing Node.js... "
 sudo apt-get install -y nodejs git make g++ gcc &>/dev/null
-echo -e "${CM}${CL} \r"
+ echo -e "${CM}${CL} \r"
  
-echo -en "${GN} Installing Yarn... "
+echo -en "${GN} Installing yarn... "
 npm install --global yarn &>/dev/null
 echo -e "${CM}${CL} \r"
 
-echo -en "${GN} Installing Dashy (Patience)... "
-git clone https://github.com/Lissy93/dashy.git &>/dev/null
-cd /dashy
-yarn &>/dev/null
-export NODE_OPTIONS=--max-old-space-size=1000 &>/dev/null
-yarn build &>/dev/null
+echo -en "${GN} Build/Install Zwavejs2MQTT (5-6 min)... "
+sudo git clone https://github.com/zwave-js/zwavejs2mqtt /opt/zwavejs2mqtt &>/dev/null
+cd /opt/zwavejs2mqtt &>/dev/null
+yarn install &>/dev/null
+yarn run build &>/dev/null
 echo -e "${CM}${CL} \r"
+echo -en "${GN} Creating Service file zwavejs2mqtt.service... "
+service_path="/etc/systemd/system/zwavejs2mqtt.service"
 
-echo -en "${GN} Creating Dashy Service... "
-cat <<EOF > /etc/systemd/system/dashy.service
-[Unit]
-Description=dashy
-
+echo "[Unit]
+Description=zwavejs2mqtt
+After=network.target
 [Service]
-Type=simple
-WorkingDirectory=/dashy
-ExecStart=/usr/bin/yarn start
+ExecStart=/usr/bin/npm start
+WorkingDirectory=/opt/zwavejs2mqtt
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
 [Install]
-WantedBy=multi-user.target
-EOF
-sudo systemctl start dashy &>/dev/null
-sudo systemctl enable dashy &>/dev/null
+WantedBy=multi-user.target" > $service_path
+systemctl start zwavejs2mqtt
+systemctl enable zwavejs2mqtt &>/dev/null
 echo -e "${CM}${CL} \r"
 
 PASS=$(grep -w "root" /etc/shadow | cut -b6);
@@ -113,7 +111,7 @@ systemctl daemon-reload
 systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
 echo -e "${CM}${CL} \r"
   fi
-
+  
 echo -en "${GN} Cleanup... "
 apt-get autoremove >/dev/null
 apt-get autoclean >/dev/null
